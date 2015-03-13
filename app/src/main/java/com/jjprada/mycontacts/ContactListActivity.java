@@ -1,5 +1,6 @@
 package com.jjprada.mycontacts;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,12 +19,14 @@ import java.util.ArrayList;
 
 public class ContactListActivity extends ActionBarActivity {
 
+    private ArrayList<Contact> mContacts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        ArrayList<Contact> contacts = new ArrayList<>();
+        mContacts = new ArrayList<>();
        /* Contact contact1 = new Contact();
         contact1.setName("José Prada");
         contacts.add(contact1);*/
@@ -30,13 +34,14 @@ public class ContactListActivity extends ActionBarActivity {
         for (int i = 0; i < 30; i++) {
             Contact contact1 = new Contact();
             contact1.setName("José Prada "+i);
-            contacts.add(contact1);
+            mContacts.add(contact1);
         }
 
 
         ListView listView = (ListView)findViewById(R.id.contact_list_view);
-        listView.setAdapter(new ContactAdapter(contacts));
+        listView.setAdapter(new ContactAdapter(mContacts));
 
+        // LISTNER PARA EL SCROLL: OCULAR O MOSTRAR LA ACTION BAR
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             int previousFirstItem = 0;
 
@@ -56,6 +61,17 @@ public class ContactListActivity extends ActionBarActivity {
             }
         });
 
+        // LISTNER PARA EL ITEM DEL LISTVIEW: CUANDO PINCHEMOS EN UN CONTACTO QUE NOS LLEVE A LA PAGINA DEL CONTACTO
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Contact contact = mContacts.get(position);
+
+                Intent i = new Intent(ContactListActivity.this, ContactViewActivity.class);
+                i.putExtra(ContactViewActivity.EXTRA, contact);
+                startActivity(i);
+            }
+        });
 
     }
 
