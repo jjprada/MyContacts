@@ -3,6 +3,7 @@ package com.jjprada.mycontacts;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -29,17 +30,15 @@ public class ContactViewActivity extends ActionBarActivity {
         int width = point.x;
         int height = point.y;
 
-        ImageView iv = (ImageView)findViewById(R.id.contact_view_image);
-        iv.setLayoutParams(new RelativeLayout.LayoutParams(width, (int)(width * (9.0/16.0))));
-
-        Log.d(TAG, "Width is "+width+" and Height is "+height);
-        Log.d(TAG, "Height in doubles is "+(width*(9.0/16.0)));
-        Log.d(TAG, "New Height is "+iv.getLayoutParams().height);
-
+        RelativeLayout headerSection = (RelativeLayout)findViewById(R.id.contact_view_header);
+        headerSection.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
         Contact contact = (Contact)getIntent().getSerializableExtra(EXTRA);
         TextView contactViewName = (TextView)findViewById(R.id.contact_view_name);
         contactViewName.setText(contact.getName());
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.contact_view_toolbar);
+        setSupportActionBar(toolbar);
 
     }
 
