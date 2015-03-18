@@ -8,9 +8,17 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 public class ContactViewActivity extends ActionBarActivity {
@@ -38,8 +46,53 @@ public class ContactViewActivity extends ActionBarActivity {
         contactViewName.setText(contact.getName());
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.contact_view_toolbar);
-        setSupportActionBar(toolbar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
 
+                if (id == R.id.contact_view_edit){
+                    Log.d(TAG, "Edit message");
+                    return true;
+                }
+                return false;
+            }
+        });
+        toolbar.inflateMenu(R.menu.menu_contact_view);
+
+        ListView listView = (ListView)findViewById(R.id.contact_view_fields);
+
+
+    }
+
+    private class FieldsAdapter extends BaseAdapter{
+        ArrayList<String> emails;
+        ArrayList<String> phoneNumber;
+
+        FieldsAdapter(ArrayList<String> emails, ArrayList<String> phoneNumber){
+            this.emails = emails;
+            this.phoneNumber = phoneNumber;
+        }
+
+        @Override
+        public int getCount() {
+            return emails.size() + phoneNumber.size();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
     }
 
     @Override
