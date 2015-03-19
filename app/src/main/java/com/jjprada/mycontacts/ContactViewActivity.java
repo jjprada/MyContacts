@@ -10,10 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +37,7 @@ public class ContactViewActivity extends ActionBarActivity {
         int height = point.y;
 
         RelativeLayout headerSection = (RelativeLayout)findViewById(R.id.contact_view_header);
-        headerSection.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
+        headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
         Contact contact = (Contact)getIntent().getSerializableExtra(EXTRA);
         TextView contactViewName = (TextView)findViewById(R.id.contact_view_name);
@@ -60,28 +58,39 @@ public class ContactViewActivity extends ActionBarActivity {
         });
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
-        ListView listView = (ListView)findViewById(R.id.contact_view_fields);
+        FieldsAdapter fieldsAdapter = new FieldsAdapter(contact.getPhoneNumbers(), contact.getEmails());
 
+        ListView listView = (ListView)findViewById(R.id.contact_view_fields);
+        listView.setAdapter(fieldsAdapter);
 
     }
 
     private class FieldsAdapter extends BaseAdapter{
+        ArrayList<String> phoneNumbers;
         ArrayList<String> emails;
-        ArrayList<String> phoneNumber;
 
-        FieldsAdapter(ArrayList<String> emails, ArrayList<String> phoneNumber){
+        FieldsAdapter(ArrayList<String> phoneNumber, ArrayList<String> emails){
+            this.phoneNumbers = phoneNumber;
             this.emails = emails;
-            this.phoneNumber = phoneNumber;
         }
 
         @Override
         public int getCount() {
-            return emails.size() + phoneNumber.size();
+            return phoneNumbers.size() + emails.size();
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            if(convertView == null){
+                convertView = ContactViewActivity.this.getLayoutInflater().inflate(R.layout.contact_view_field_row, parent, false);
+            }
+
+            String value = (String)getItem(position);
+
+            TextView contactValue = (TextView)convertView.findViewById(R.id.contact_view_row_value);
+            contactValue.setText(value);
+
+            return convertView;
         }
 
         @Override
@@ -91,7 +100,19 @@ public class ContactViewActivity extends ActionBarActivity {
 
         @Override
         public Object getItem(int position) {
-            return null;
+            if (isEmail(position)){
+                return emails.get(position - phoneNumbers.size());
+            } else {
+                return phoneNumbers.get(position);
+            }
+        }
+
+        private boolean isEmail(int position){
+            if (position > phoneNumbers.size()-1){
+                return true;    // Es email
+            } else {
+                return false;   // Es phoneNumbers
+            }
         }
     }
 

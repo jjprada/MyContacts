@@ -31,10 +31,20 @@ public class ContactListActivity extends ActionBarActivity {
         contact1.setName("José Prada");
         contacts.add(contact1);*/
 
-        for (int i = 0; i < 30; i++) {
-            Contact contact1 = new Contact();
-            contact1.setName("José Prada "+i);
-            mContacts.add(contact1);
+        for (int i = 0; i < 30; i++) {                  // Crear datos por defecto para ver como es la app
+            ArrayList<String> phoneNumbers = new ArrayList<>();
+            phoneNumbers.add("916765334");
+            phoneNumbers.add("646724165");
+
+            ArrayList<String> emails = new ArrayList<>();
+            emails.add("jjprada@gmail.com");
+            emails.add("dracko46@gmail.com");
+
+            Contact contactDefault = new Contact();             // Crear contacto por defecto
+            contactDefault.setName("José Prada " + i);          // Definir el nombre
+            contactDefault.setPhoneNumbers(phoneNumbers);       // Definir los telefonos
+            contactDefault.setEmails(emails);                   // Definir los emails
+            mContacts.add(contactDefault);                      // Cargar contacto en la app
         }
 
 

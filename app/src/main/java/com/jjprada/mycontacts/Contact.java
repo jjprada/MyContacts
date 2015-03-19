@@ -9,30 +9,30 @@ import java.util.ArrayList;
 public class Contact implements Serializable {
 
     private String mName;
-    public ArrayList<String> emails;
-    public ArrayList<String> phoneNumbers;
+    private ArrayList<String> phoneNumbers;
+    private ArrayList<String> emails;
 
     public String getName() {
         return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
-    }
-
-    public ArrayList<String> getEmails() {
-        return emails;
-    }
-
-    public void setEmails(ArrayList<String> emails) {
-        this.emails = emails;
     }
 
     public ArrayList<String> getPhoneNumbers() {
         return phoneNumbers;
     }
 
+    public ArrayList<String> getEmails() {
+        return emails;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
     public void setPhoneNumbers(ArrayList<String> phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
+    }
+
+    public void setEmails(ArrayList<String> emails) {
+        this.emails = emails;
     }
 }
