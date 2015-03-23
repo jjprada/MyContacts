@@ -1,8 +1,12 @@
 package com.jjprada.mycontacts;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -25,6 +29,9 @@ public class ContactViewActivity extends ActionBarActivity {
     private static final String TAG = "ContactViewActivity";
     public static final String EXTRA = "CVA_Contact";   // CVA = ContactViewActivity
 
+    private int mColor;     // Almacena el color extraido con la Palette
+    private Contact mContact;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +47,9 @@ public class ContactViewActivity extends ActionBarActivity {
         RelativeLayout headerSection = (RelativeLayout)findViewById(R.id.contact_view_header);
         headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
-        Contact contact = (Contact)getIntent().getSerializableExtra(EXTRA);
+        mContact = (Contact)getIntent().getSerializableExtra(EXTRA);
         TextView contactViewName = (TextView)findViewById(R.id.contact_view_name);
-        contactViewName.setText(contact.getName());
+        contactViewName.setText(mContact.getName());
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.contact_view_toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -51,7 +58,9 @@ public class ContactViewActivity extends ActionBarActivity {
                 int id = menuItem.getItemId();
 
                 if (id == R.id.contact_view_edit){
-                    Log.d(TAG, "Edit message");
+                    Intent i = new Intent(ContactViewActivity.this, ContactEditActivity.class);
+                    i.putExtra(ContactEditActivity.EXTRA, mContact);
+                    startActivity(i);
                     return true;
                 }
                 return false;
@@ -59,11 +68,14 @@ public class ContactViewActivity extends ActionBarActivity {
         });
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
-        FieldsAdapter fieldsAdapter = new FieldsAdapter(contact.getPhoneNumbers(), contact.getEmails());
+        FieldsAdapter fieldsAdapter = new FieldsAdapter(mContact.getPhoneNumbers(), mContact.getEmails());
 
         ListView listView = (ListView)findViewById(R.id.contact_view_fields);
         listView.setAdapter(fieldsAdapter);
 
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sunset);
+        Palette palette = Palette.generate(bitmap);
+        mColor = palette.getDarkVibrantSwatch().getRgb();
     }
 
     private class FieldsAdapter extends BaseAdapter{
@@ -99,6 +111,8 @@ public class ContactViewActivity extends ActionBarActivity {
                     contactIcon.setImageResource(R.drawable.ic_call);
                 }
             }
+
+            contactIcon.setColorFilter(mColor);
 
             return convertView;
         }
