@@ -19,17 +19,15 @@ import java.util.ArrayList;
 
 public class ContactListActivity extends ActionBarActivity {
 
-    private ArrayList<Contact> mContacts;
+    private ContactList mContacts;
+    private ContactAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        mContacts = new ArrayList<>();
-       /* Contact contact1 = new Contact();
-        contact1.setName("José Prada");
-        contacts.add(contact1);*/
+        mContacts = ContactList.getInstance();
 
         for (int i = 0; i < 30; i++) {                  // Crear datos por defecto para ver como es la app
             ArrayList<String> phoneNumbers = new ArrayList<>();
@@ -47,9 +45,9 @@ public class ContactListActivity extends ActionBarActivity {
             mContacts.add(contactDefault);                      // Cargar contacto en la app
         }
 
-
         ListView listView = (ListView)findViewById(R.id.contact_list_view);
-        listView.setAdapter(new ContactAdapter(mContacts));
+        mAdapter = new ContactAdapter(mContacts);
+        listView.setAdapter(mAdapter);
 
         // LISTNER PARA EL SCROLL: OCULAR O MOSTRAR LA ACTION BAR
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -75,10 +73,8 @@ public class ContactListActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Contact contact = mContacts.get(position);
-
                 Intent i = new Intent(ContactListActivity.this, ContactViewActivity.class);
-                i.putExtra(ContactViewActivity.EXTRA, contact);
+                i.putExtra(ContactViewActivity.EXTRA, position);
                 startActivity(i);
             }
         });
@@ -101,6 +97,12 @@ public class ContactListActivity extends ActionBarActivity {
 
             return convertView;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

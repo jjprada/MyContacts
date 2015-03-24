@@ -1,36 +1,91 @@
 package com.jjprada.mycontacts;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 public class ContactEditActivity extends ActionBarActivity {
 
+    private static final String TAG = "ContactEditActivity";
     public static final String EXTRA = "CEA_Contact";   // CEA = ContactEditActivity
+
+    private Contact mContact;
+    private EditText mEditName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_edit);
 
-        Contact contact = (Contact)getIntent().getSerializableExtra(EXTRA);
+        int position = getIntent().getIntExtra(EXTRA, 0);
+        mContact = ContactList.getInstance().get(position);
 
-        EditText editName = (EditText)findViewById(R.id.contact_edit_name);
-        editName.setText(contact.getName());
+        mEditName = (EditText) findViewById(R.id.contact_edit_name);
+        mEditName.setText(mContact.getName());
 
-        addToSection(R.id.phone_number_section, contact.getPhoneNumbers());
-        addToSection(R.id.email_section, contact.getEmails());
-   }
+        addToSection(R.id.phone_number_section, mContact.getPhoneNumbers());
+        addToSection(R.id.email_section, mContact.getEmails());
 
-    private void addToSection(int sectionID, ArrayList<String> values){
-        LinearLayout section = (LinearLayout)findViewById(sectionID);
+        TextView addNewPhoneNumber = (TextView) findViewById(R.id.add_new_phone_number);
+        addNewPhoneNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToSection(R.id.phone_number_section);
+            }
+        });
+
+        TextView addNewEmail = (TextView) findViewById(R.id.add_new_email);
+        addNewEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToSection(R.id.email_section);
+            }
+        });
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contact_edit_toolbar);
+        toolbar.setTitle(R.string.toolbar_name);
+        toolbar.setNavigationIcon(R.drawable.ic_done);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContact.setName(mEditName.getText().toString());
+                mContact.setPhoneNumbers(updateContact(R.id.phone_number_section));
+                mContact.setEmails(updateContact(R.id.email_section));
+
+                Toast.makeText(ContactEditActivity.this, R.string.toast, Toast.LENGTH_LONG)
+                        .show();
+
+                finish();
+            }
+        });
+    }
+
+    private ArrayList<String> updateContact(int sectionID) {
+        ArrayList<String> newData = new ArrayList<String>();
+
+        LinearLayout section = (LinearLayout) findViewById(sectionID);
+        for (int i = 0; i < section.getChildCount(); i++) {
+            EditText et = (EditText) section.getChildAt(i);
+            newData.add(et.getText().toString());
+        }
+        return newData;
+    }
+
+    private void addToSection(int sectionID, ArrayList<String> values) {
+        LinearLayout section = (LinearLayout) findViewById(sectionID);
         for (int i = 0; i < values.size(); i++) {
             EditText et = new EditText(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -38,7 +93,14 @@ public class ContactEditActivity extends ActionBarActivity {
             et.setText(values.get(i));
             section.addView(et);
         }
+    }
 
+    private void addToSection(int sectionID) {
+        LinearLayout section = (LinearLayout) findViewById(sectionID);
+        EditText et = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        et.setLayoutParams(lp);
+        section.addView(et);
     }
 
     @Override

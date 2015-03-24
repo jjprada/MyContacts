@@ -31,6 +31,10 @@ public class ContactViewActivity extends ActionBarActivity {
 
     private int mColor;     // Almacena el color extraido con la Palette
     private Contact mContact;
+    private int mPosition;
+    private TextView mContactViewName;
+    private ListView mListView;
+    private FieldsAdapter mFieldsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +51,10 @@ public class ContactViewActivity extends ActionBarActivity {
         RelativeLayout headerSection = (RelativeLayout)findViewById(R.id.contact_view_header);
         headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
-        mContact = (Contact)getIntent().getSerializableExtra(EXTRA);
-        TextView contactViewName = (TextView)findViewById(R.id.contact_view_name);
-        contactViewName.setText(mContact.getName());
+        mPosition = getIntent().getIntExtra(EXTRA, 0);
+        mContact = ContactList.getInstance().get(mPosition);
+
+        mContactViewName = (TextView)findViewById(R.id.contact_view_name);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.contact_view_toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -59,7 +64,7 @@ public class ContactViewActivity extends ActionBarActivity {
 
                 if (id == R.id.contact_view_edit){
                     Intent i = new Intent(ContactViewActivity.this, ContactEditActivity.class);
-                    i.putExtra(ContactEditActivity.EXTRA, mContact);
+                    i.putExtra(ContactEditActivity.EXTRA, mPosition);
                     startActivity(i);
                     return true;
                 }
@@ -68,14 +73,20 @@ public class ContactViewActivity extends ActionBarActivity {
         });
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
-        FieldsAdapter fieldsAdapter = new FieldsAdapter(mContact.getPhoneNumbers(), mContact.getEmails());
-
-        ListView listView = (ListView)findViewById(R.id.contact_view_fields);
-        listView.setAdapter(fieldsAdapter);
+        mListView = (ListView)findViewById(R.id.contact_view_fields);
+        mFieldsAdapter = new FieldsAdapter(mContact.getPhoneNumbers(), mContact.getEmails());
+        mListView.setAdapter(mFieldsAdapter);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sunset);
         Palette palette = Palette.generate(bitmap);
         mColor = palette.getDarkVibrantSwatch().getRgb();
+
+        updateUI();
+    }
+
+    private void updateUI(){
+        mContactViewName.setText(mContact.getName());
+        mFieldsAdapter.notifyDataSetChanged();
     }
 
     private class FieldsAdapter extends BaseAdapter{
@@ -146,6 +157,13 @@ public class ContactViewActivity extends ActionBarActivity {
                 return false;   // Es phoneNumbers
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mContact = ContactList.getInstance().get(mPosition);
+        updateUI();
     }
 
     @Override

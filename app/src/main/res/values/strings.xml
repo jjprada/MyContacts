@@ -11,4 +11,6 @@
     <string name="phone_number_label">Phone Numbers</string>
     <string name="email_label">Email Addresses</string>
     <string name="add_new">Add New</string>
+    <string name="toolbar_name">Edit Contact</string>
+    <string name="toast">Saved contact</string>
 </resources>
