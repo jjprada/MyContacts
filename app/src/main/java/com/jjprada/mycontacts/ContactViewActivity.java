@@ -73,10 +73,6 @@ public class ContactViewActivity extends ActionBarActivity {
         });
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
-        mListView = (ListView)findViewById(R.id.contact_view_fields);
-        mFieldsAdapter = new FieldsAdapter(mContact.getPhoneNumbers(), mContact.getEmails());
-        mListView.setAdapter(mFieldsAdapter);
-
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sunset);
         Palette palette = Palette.generate(bitmap);
         mColor = palette.getDarkVibrantSwatch().getRgb();
@@ -86,7 +82,11 @@ public class ContactViewActivity extends ActionBarActivity {
 
     private void updateUI(){
         mContactViewName.setText(mContact.getName());
-        mFieldsAdapter.notifyDataSetChanged();
+
+        //mFieldsAdapter.notifyDataSetChanged();    // Normalmente usariamos esto y las tres líneas de después irían fuera, pero así no funciona completamente bien. Nos lo explicará más adelante
+        mListView = (ListView)findViewById(R.id.contact_view_fields);
+        mFieldsAdapter = new FieldsAdapter(mContact.getPhoneNumbers(), mContact.getEmails());
+        mListView.setAdapter(mFieldsAdapter);
     }
 
     private class FieldsAdapter extends BaseAdapter{
@@ -162,7 +162,7 @@ public class ContactViewActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mContact = ContactList.getInstance().get(mPosition);
+
         updateUI();
     }
 
